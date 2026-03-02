@@ -1,11 +1,584 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
-  <body>
-    <div>123测试</div>
-  </body>
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>致我最爱的你 - 短暂记录册</title>
+
+    <!-- 引入 Swiper 样式 -->
+    <link rel="stylesheet" href="./css/swiper.min.css" />
+    <!-- 引入 Animate.css -->
+    <link rel="stylesheet" href="./css/animate.min.css" />
+    <!-- 【新增】引入 Viewer.js 样式 (用于图片放大) -->
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.css" /> -->
+    <link rel="stylesheet" href="./css/viewer.min.css" />
+    <!-- 引入 Google Fonts -->
+    <link href="./css/font.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #ff758c;
+            --secondary-color: #ff7eb3;
+            --love-gradient: linear-gradient(to top, #fad0c4 0%, #ffd1ff 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Serif SC', serif;
+            background: var(--love-gradient);
+            min-height: 120vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        /* 背景漂浮爱心 */
+        .bg-hearts {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .heart {
+            position: absolute;
+            bottom: -100px;
+            background-color: rgba(255, 117, 140, 0.6);
+            display: inline-block;
+            height: 30px;
+            width: 30px;
+            margin: 0 10px;
+            transform: rotate(-45deg);
+            animation: float 6s linear infinite;
+        }
+
+        .heart:before,
+        .heart:after {
+            content: "";
+            background-color: rgba(255, 117, 140, 0.6);
+            border-radius: 50%;
+            height: 30px;
+            width: 30px;
+            position: absolute;
+        }
+
+        .heart:before {
+            top: -15px;
+            left: 0;
+        }
+
+        .heart:after {
+            left: 15px;
+            top: 0;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(-45deg) scale(0.6);
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: translateY(-120vh) rotate(-45deg) scale(1);
+                opacity: 0;
+            }
+        }
+
+        /* 主容器 */
+        .container {
+            width: 90%;
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(255, 117, 140, 0.3);
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            margin: 20px 0;
+            border: 2px solid #fff;
+        }
+
+        h1 {
+            font-family: 'Dancing Script', cursive;
+            color: var(--primary-color);
+            font-size: 3rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 轮播图容器 */
+        .swiper {
+            width: 100%;
+            height: 400px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+            overflow: hidden;
+            cursor: pointer;
+            /* 提示可点击 */
+        }
+
+        .swiper-slide {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #000;
+            position: relative;
+        }
+
+        .swiper-slide img,
+        .swiper-slide video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 15px;
+            transition: transform 0.3s;
+        }
+
+        /* 鼠标悬停图片时的微效 */
+        .swiper-slide img:hover {
+            transform: scale(1.02);
+            filter: brightness(1.1);
+        }
+
+        /* 自定义分页器 */
+        .swiper-pagination-bullet {
+            background: var(--primary-color);
+            opacity: 0.5;
+        }
+
+        .swiper-pagination-bullet-active {
+            opacity: 1;
+            transform: scale(1.2);
+        }
+
+        /* 文字区域 */
+        .message-area {
+            min-height: 80px;
+            font-size: 1.2rem;
+            color: #555;
+            line-height: 1.6;
+            padding: 0 20px;
+        }
+
+        .typing-text {
+            border-right: 2px solid var(--primary-color);
+            animation: blink 0.7s infinite;
+            display: inline-block;
+        }
+
+        @keyframes blink {
+            50% {
+                border-color: transparent;
+            }
+        }
+
+        /* 按钮样式 */
+
+        .btn-shuohua {
+            position: fixed;
+            bottom: 20px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+            font-size: 20px;
+            transition: transform 0.3s;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+
+        .btn-music {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+            font-size: 20px;
+            transition: transform 0.3s;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .btn-music:hover {
+            transform: scale(1.1);
+        }
+
+        .btn-music.playing {
+            animation: rotate 3s linear infinite;
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* 【新增】自定义 Viewer.js 的蒙层和按钮颜色，使其更浪漫 */
+        .viewer-navbar {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        .viewer-title {
+            color: #fff;
+        }
+
+        .viewer-button {
+            color: #ff758c;
+            /* 粉色关闭按钮 */
+        }
+
+        .viewer-tooltip {
+            display: none;
+            /* 隐藏滚轮提示 */
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+
+            .swiper {
+                height: 250px;
+            }
+
+            .container {
+                width: 95%;
+                padding: 15px;
+            }
+
+            .message-area {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- 背景音乐控制按钮 -->
+    <button class="btn-music" id="musicBtn" title="播放/暂停音乐">🎵</button>
+    <audio id="bgMusic" loop>
+        <source src="./music/shimianmaifu.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- 背景爱心容器 -->
+    <div class="bg-hearts" id="heartContainer"></div>
+
+    <h1 class="animate__animated animate__heartBeat animate__infinite" style="font-size: 20px;">对你的心跳永不停歇</h1>
+    <div class="renshi">张博文 And 彭美风</div>
+    <div class="renshi">认识的时间从 25 年 12 月 12 日 11 点 32 分</div>
+    <div class="duoshaotian"></div>
+
+    <div class="container animate__animated animate__fadeInDown">
+        <!-- Swiper 轮播图 -->
+        <!-- 【注意】添加了 id="gallery" 方便 JS 绑定 -->
+        <div class="swiper mySwiper" id="gallery">
+            <div class="swiper-wrapper">
+
+                <!-- 幻灯片 1: 视频 (视频不会被放大，点击正常播放) -->
+                <div class="swiper-slide">
+                    <video controls autoplay muted loop playsinline>
+                        <source src="./image/shipin.mp4" type="video/mp4">
+                    </video>
+                </div>
+
+                <!-- 幻灯片 2-21: 图片 (这些都可以点击放大) -->
+                <div class="swiper-slide"><img src="./image/1.jpg" alt="Love Photo 1"></div>
+                <div class="swiper-slide"><img src="./image/12.jpg" alt="Love Photo 2"></div>
+                <div class="swiper-slide"><img src="./image/13.jpg" alt="Love Photo 3"></div>
+                <div class="swiper-slide"><img src="./image/20.jpg" alt="Love Photo 4"></div>
+                <div class="swiper-slide"><img src="./image/18.jpg" alt="Love Photo 5"></div>
+                <div class="swiper-slide"><img src="./image/8.jpg" alt="Love Photo 6"></div>
+                <div class="swiper-slide"><img src="./image/10.jpg" alt="Love Photo 7"></div>
+                <div class="swiper-slide"><img src="./image/11.jpg" alt="Love Photo 8"></div>
+                <div class="swiper-slide"><img src="./image/9.jpg" alt="Love Photo 9"></div>
+                <div class="swiper-slide"><img src="./image/14.jpg" alt="Love Photo 10"></div>
+                <div class="swiper-slide"><img src="./image/15.jpg" alt="Love Photo 11"></div>
+                <div class="swiper-slide"><img src="./image/16.jpg" alt="Love Photo 12"></div>
+                <div class="swiper-slide"><img src="./image/19.jpg" alt="Love Photo 13"></div>
+                <div class="swiper-slide"><img src="./image/6.jpg" alt="Love Photo 14"></div>
+                <div class="swiper-slide"><img src="./image/7.jpg" alt="Love Photo 15"></div>
+                <div class="swiper-slide"><img src="./image/17.jpg" alt="Love Photo 16"></div>
+                <div class="swiper-slide"><img src="./image/5.jpg" alt="Love Photo 17"></div>
+                <div class="swiper-slide"><img src="./image/4.jpg" alt="Love Photo 18"></div>
+                <div class="swiper-slide"><img src="./image/2.jpg" alt="Love Photo 19"></div>
+                <div class="swiper-slide"><img src="./image/3.jpg" alt="Love Photo 20"></div>
+
+            </div>
+            <div class="swiper-pagination"></div>
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+        </div>
+
+        <!-- 表白文字区域 -->
+        <div class="message-area">
+            <p id="typewriter" class="typing-text"></p>
+        </div>
+    </div>
+
+    <!-- 背景音乐控制按钮 -->
+    <button class="btn-shuohua" id="shuohuaBtn" title="播放/暂停音乐">点击给你说一句话。</button>
+    <audio id="bgMusicshuohua" loop>
+        <source src="./music/武都路.m4a" type="audio/mpeg">
+    </audio>
+
+    <!-- 引入 jQuery -->
+    <script src="./js/jq.min.js"></script>
+    <!-- 引入 Swiper JS -->
+    <script src="./js/swiper.min.js"></script>
+    <!-- 【新增】引入 Viewer.js (用于图片放大) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            let typeTimer = null;
+
+            // 1. 初始化 Swiper 轮播图
+            var swiper = new Swiper(".mySwiper", {
+                spaceBetween: 30,
+                centeredSlides: true,
+                autoplay: {
+                    delay: 10000,
+                    disableOnInteraction: false,
+                },
+                pagination: {
+                    el: ".swiper-pagination",
+                    clickable: true,
+                },
+                navigation: {
+                    nextEl: ".swiper-button-next",
+                    prevEl: ".swiper-button-prev",
+                },
+                effect: 'fade',
+                fadeEffect: { crossFade: true },
+                on: {
+                    slideChange: function () {
+                        resetTypewriter();
+                    },
+                },
+            });
+
+            // 2. 初始化 Viewer.js (图片放大功能)
+            // 我们只选择 .swiper-slide 下的 img 元素，这样视频不会被干扰
+            const gallery = document.getElementById('gallery');
+            const viewer = new Viewer(gallery, {
+                button: true,      // 显示关闭按钮
+                navbar: true,      // 显示底部缩略图导航
+                title: true,       // 显示图片标题
+                toolbar: true,     // 显示缩放、旋转工具栏
+                tooltip: true,     // 显示缩放比例提示
+                movable: true,     // 允许拖拽移动
+                zoomable: true,    // 允许缩放
+                rotatable: true,   // 允许旋转
+                scalable: true,    // 允许翻转
+                transition: true,  // 开启过渡动画
+                fullscreen: true,  // 允许全屏
+                keyboard: true,    // 支持键盘控制 (ESC 关闭，方向键移动)
+                backdrop: 'static',// 点击蒙层背景不关闭，必须点关闭按钮或双击图片（可选）
+                zIndex: 9999       // 确保蒙层在最上层
+            });
+
+            // 3. 背景音乐控制
+            var music = document.getElementById("bgMusic");
+            var musicBtn = document.getElementById("musicBtn");
+            var isPlaying = false;
+
+            musicBtn.addEventListener("click", function (e) {
+                e.stopPropagation();
+                if (isPlaying) {
+                    music.pause();
+                    musicBtn.classList.remove("playing");
+                    musicBtn.innerHTML = "🎵";
+                } else {
+                    music.play().catch(err => console.log("播放失败:", err));
+                    musicBtn.classList.add("playing");
+                    musicBtn.innerHTML = "⏸";
+                }
+                isPlaying = !isPlaying;
+            });
+
+
+            var bgMusicshuohua = document.getElementById("bgMusicshuohua");
+            var shuohuaBtn = document.getElementById("shuohuaBtn");
+            var isPlaying = false;
+
+            shuohuaBtn.addEventListener("click", function (e) {
+                e.stopPropagation();
+                if (isPlaying) {
+                    bgMusicshuohua.pause();
+                    shuohuaBtn.classList.remove("playing");
+                    shuohuaBtn.innerHTML = "点击给你说一句话";
+                } else {
+                    bgMusicshuohua.play().catch(err => console.log("播放失败:", err));
+                    shuohuaBtn.classList.add("playing");
+                    shuohuaBtn.innerHTML = "暂停";
+                }
+                isPlaying = !isPlaying;
+            });
+
+            document.body.addEventListener('click', function () {
+                if (!isPlaying) {
+                    music.play().then(() => {
+                        isPlaying = true;
+                        musicBtn.classList.add("playing");
+                        musicBtn.innerHTML = "⏸";
+                    }).catch(e => console.log("需手动点击播放"));
+                }
+            }, { once: true });
+
+            // 4. 生成背景漂浮爱心
+            function createHearts() {
+                const container = document.getElementById('heartContainer');
+                const heartCount = 20;
+                for (let i = 0; i < heartCount; i++) {
+                    let heart = document.createElement('div');
+                    heart.classList.add('heart');
+                    heart.style.left = Math.random() * 100 + "vw";
+                    heart.style.animationDuration = Math.random() * 3 + 4 + "s";
+                    heart.style.animationDelay = Math.random() * 5 + "s";
+                    container.appendChild(heart);
+                }
+            }
+            createHearts();
+
+            // 5. 打字机效果逻辑
+            const texts = [
+                "彭美风，遇见你是我这辈子最幸运的事...",
+                "每一个和你在一起的时刻，都像电影一样美好。",
+                "愿未来的每一天，都有你相伴。",
+                "我爱你，不仅仅今天，而是每一天。❤️"
+            ];
+
+            let textIndex = 0;
+            let charIndex = 0;
+            let isDeleting = false;
+            const typeSpeed = 150;
+            const deleteSpeed = 80;
+            const pauseTime = 3000;
+            const targetElement = document.getElementById("typewriter");
+
+            function typeWriterEffect() {
+                if (typeTimer) clearTimeout(typeTimer);
+                if (textIndex >= texts.length) textIndex = 0;
+                const currentText = texts[textIndex];
+
+                if (!isDeleting && charIndex <= currentText.length) {
+                    targetElement.textContent = currentText.substring(0, charIndex);
+                    charIndex++;
+                    typeTimer = setTimeout(typeWriterEffect, typeSpeed);
+                } else if (isDeleting && charIndex > 0) {
+                    targetElement.textContent = currentText.substring(0, charIndex - 1);
+                    charIndex--;
+                    typeTimer = setTimeout(typeWriterEffect, deleteSpeed);
+                } else {
+                    isDeleting = !isDeleting;
+                    if (!isDeleting) {
+                        textIndex++;
+                        typeTimer = setTimeout(typeWriterEffect, 500);
+                    } else {
+                        typeTimer = setTimeout(typeWriterEffect, pauseTime);
+                    }
+                }
+            }
+
+            function resetTypewriter() {
+                if (typeTimer) clearTimeout(typeTimer);
+                isDeleting = true;
+                const fastClear = setInterval(() => {
+                    if (charIndex > 0) {
+                        charIndex--;
+                        targetElement.textContent = texts[textIndex].substring(0, charIndex);
+                    } else {
+                        clearInterval(fastClear);
+                        textIndex = (textIndex + 1) % texts.length;
+                        isDeleting = false;
+                        typeWriterEffect();
+                    }
+                }, 30);
+            }
+
+            typeWriterEffect();
+
+            // 6. 实时计时器逻辑
+            function calculateDateDiff(startInput, endInput) {
+                let start = new Date(startInput);
+                let end = new Date(endInput);
+                if (start > end) [start, end] = [end, start];
+
+                let years = end.getFullYear() - start.getFullYear();
+                let months = end.getMonth() - start.getMonth();
+                let days = end.getDate() - start.getDate();
+                let hours = end.getHours() - start.getHours();
+                let minutes = end.getMinutes() - start.getMinutes();
+                let seconds = end.getSeconds() - start.getSeconds();
+
+                if (seconds < 0) { seconds += 60; minutes--; }
+                if (minutes < 0) { minutes += 60; hours--; }
+                if (hours < 0) { hours += 24; days--; }
+
+                if (days < 0) {
+                    let prevMonthDays = new Date(end.getFullYear(), end.getMonth(), 0).getDate();
+                    days += prevMonthDays;
+                    months--;
+                    if (days < 0) {
+                        months--;
+                        let prevPrevMonthDays = new Date(end.getFullYear(), end.getMonth() - 1, 0).getDate();
+                        days += prevPrevMonthDays;
+                    }
+                }
+                if (months < 0) { months += 12; years--; }
+
+                return { years, months, days, hours, minutes, seconds };
+            }
+
+            function updateTimer() {
+                const startDateStr = "2025-12-12 11:32:00";
+                const now = new Date();
+                const diff = calculateDateDiff(startDateStr, now);
+                $('.duoshaotian').html(`我们已经相识了 ${diff.years}年 ${diff.months}月 ${diff.days}天 ${diff.hours}时 ${diff.minutes}分 ${diff.seconds}秒`);
+                document.title = `在一起 ${diff.years}年${diff.months}月${diff.days}天 - 致彭美风`;
+            }
+
+            updateTimer();
+            setInterval(updateTimer, 1000);
+        });
+    </script>
+</body>
+
 </html>
