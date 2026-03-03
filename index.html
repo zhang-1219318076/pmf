@@ -569,8 +569,9 @@
 
             function updateTimer() {
                 const startDateStr = "2025-12-12 11:32:00";
+                const endDateStr = "2026-03-03 15:00:00";
                 const now = new Date();
-                const diff = calculateDateDiff(startDateStr, now);
+                const diff = calculateDateDiff(startDateStr, endDateStr);
                 $('.duoshaotian').html(`我们已经相识了 ${diff.years}年 ${diff.months}月 ${diff.days}天 ${diff.hours}时 ${diff.minutes}分 ${diff.seconds}秒`);
                 document.title = `在一起 ${diff.years}年${diff.months}月${diff.days}天 - 致彭美风`;
             }
